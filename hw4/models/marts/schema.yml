@@ -1,0 +1,104 @@
+version: 2
+
+models:
+  - name: mart_daily_state_metrics
+    description: "Daily transaction metrics grouped by US state"
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - transaction_date
+              - us_state
+
+    columns:
+      - name: transaction_date
+        description: "Transaction date"
+        data_tests:
+          - not_null
+
+      - name: us_state
+        description: "US state abbreviation"
+        data_tests:
+          - not_null
+
+      - name: transaction_count
+        description: "Number of transactions"
+
+      - name: p95_amount
+        description: "95th percentile of transaction amounts"
+
+  - name: mart_fraud_by_category
+    description: "Fraud statistics aggregated by transaction category"
+
+    columns:
+      - name: category
+        description: "Transaction category"
+        data_tests:
+          - not_null
+          - unique
+
+      - name: fraud_rate
+        description: "Percentage of fraudulent transactions"
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 100
+  - name: mart_fraud_by_state
+    description: "Fraud metrics by US state"
+    columns:
+      - name: us_state
+        description: "US state abbreviation"
+        data_tests:
+          - not_null
+          - unique
+
+      - name: fraud_rate
+        description: "Percentage of fraudulent transactions"
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 100
+
+      - name: unique_customers
+        description: "Number of distinct customers"
+
+      - name: unique_merchants
+        description: "Number of distinct merchants"
+
+      - name: fraud_amount
+        description: "Total fraudulent transaction amount"
+  - name: mart_customer_risk_profile
+    description: "Customer transaction history and risk classification"
+    columns:
+      - name: customer_id
+        description: "Customer identifier derived from personal attributes"
+        data_tests:
+          - not_null
+          - unique
+
+      - name: fraud_rate
+        description: "Percentage of fraudulent transactions"
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 100
+
+      - name: risk_level
+        description: "Customer risk category"
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['HIGH', 'MEDIUM', 'LOW']
+
+      - name: transaction_count
+        description: "Number of customer transactions"
+
+      - name: avg_amount
+        description: "Average transaction amount"

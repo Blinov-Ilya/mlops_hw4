@@ -1,0 +1,8 @@
+version: 2
+
+sources:
+  - name: transactions_db
+    schema: transactions_db
+
+    tables:
+      - name: transactions

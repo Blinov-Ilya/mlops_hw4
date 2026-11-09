@@ -1,0 +1,14 @@
+
+hw4:
+  target: "{{ env_var('DBT_TARGET', 'dev') }}"
+  outputs:
+    dev:
+      type: clickhouse
+      host: "{{ env_var('DBT_HOST') }}"
+      port: "{{ env_var('DBT_PORT', '8123') | int }}"
+      secure: false
+      user: "{{ env_var('DBT_USER') }}"
+      password: "{{ env_var('DBT_ENV_SECRET_PASSWORD', '') }}"
+      schema: "{{ env_var('DBT_SCHEMA', 'dbt_dev') }}"
+      threads: 4
+  
